@@ -1,4 +1,17 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/pIINm7ks)
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/9DrT6EZJ)
+
+# Native App Development — Final Project
+**NMIX 4030/6030 — Spring 2026**
+
+---
+
+## Submission Checklist
+
+- [x] Xcode project folder (`MetDigitalGallery/`)
+- [x] `prompt.md` — initial AI prompt
+- [x] `edits.md` — numbered list of manual adjustments
+- [x] `reflection.md` — 150–300 word reflection
+- [x] `README.md` — this file, with screenshots
 
 ---
 
