@@ -22,4 +22,3 @@ I started in Google Stitch to mock out the design before writing a single line o
 Running the prompt through Codex didn't go perfectly. It generated some structs I didn't need and the models had extra fields that weren't in the API response, which caused decoding errors. I had to manually go in and clean up the structs, removing properties that didn't match the JSON. That was actually useful so it forced me to really read through the code and understand what each piece was doing instead of just running it blindly.
 
 
-

@@ -13,6 +13,7 @@ import SwiftUI
 struct ExploreView: View {
 
     @StateObject private var viewModel = ArtworkViewModel()
+    @State private var searchText = ""
 
     private let columns = [
         GridItem(.flexible(), spacing: 2),
@@ -43,7 +44,34 @@ struct ExploreView: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
-                        .padding(.bottom, 16)
+                        .padding(.bottom, 12)
+
+                    // ── Search Bar ────────────────────────────────────
+                    HStack(spacing: 10) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundStyle(Color.terracotta.opacity(0.7))
+                        TextField("Search paintings, sculptures…", text: $searchText)
+                            .font(.subheadline)
+                            .submitLabel(.search)
+                            .onSubmit {
+                                let query = searchText.trimmingCharacters(in: .whitespaces)
+                                viewModel.loadArtworks(query: query.isEmpty ? "painting" : query)
+                            }
+                        if !searchText.isEmpty {
+                            Button {
+                                searchText = ""
+                                viewModel.loadArtworks(query: "painting")
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(Color.creamDark, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 16)
 
                     if viewModel.isLoading {
                         VStack(spacing: 16) {

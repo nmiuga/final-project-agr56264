@@ -13,12 +13,14 @@ import SwiftUI
 enum AppTab: String, CaseIterable {
     case home    = "HOME"
     case explore = "EXPLORE"
+    case combine = "COMBINE"
     case profile = "PROFILE"
 
     var icon: String {
         switch self {
-        case .home:    return "house.fill"
+        case .home:    return "paintbrush"
         case .explore: return "safari"
+        case .combine: return "circle.grid.2x2"
         case .profile: return "person"
         }
     }
@@ -37,6 +39,8 @@ struct ContentView: View {
                     NavigationStack { HomeView() }
                 case .explore:
                     NavigationStack { ExploreView() }
+                case .combine:
+                    NavigationStack { CombinePickerView() }
                 case .profile:
                     NavigationStack { ProfileView() }
                 }
@@ -65,11 +69,16 @@ private struct CustomTabBar: View {
                 .frame(maxWidth: .infinity)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 10)
-        .padding(.bottom, 28)
-        .background(Color.cream)
-        .overlay(Divider(), alignment: .top)
+        .padding(.horizontal, 24)
+        .padding(.top, 12)
+        .padding(.bottom, 30)
+        .background(.ultraThinMaterial)
+        .overlay(
+            Rectangle()
+                .fill(Color.terracotta.opacity(0.08))
+                .frame(height: 0.5),
+            alignment: .top
+        )
     }
 }
 
@@ -80,20 +89,11 @@ private struct TabBarItem: View {
     let isSelected: Bool
 
     var body: some View {
-        VStack(spacing: 4) {
-            Image(systemName: tab.icon)
-                .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
-            Text(tab.rawValue)
-                .font(.caption)
-                .tracking(1.2)
-        }
-        .foregroundStyle(isSelected ? Color.white : Color.secondary)
-        .padding(.horizontal, 20)
-        .padding(.vertical, 8)
-        .background(
-            isSelected ? Color.terracotta : Color.clear,
-            in: Capsule()
-        )
+        Image(systemName: isSelected ? tab.icon + ".fill" : tab.icon)
+            .font(.system(size: 22, weight: isSelected ? .semibold : .regular))
+            .foregroundStyle(isSelected ? Color.terracotta : Color.secondary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 6)
     }
 }
 

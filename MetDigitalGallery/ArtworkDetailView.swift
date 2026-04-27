@@ -44,6 +44,10 @@ struct ArtworkDetailView: View {
                     // Classification & department badges
                     badgesRow
 
+                    // Inspo Board entry — pushes PaletteBoardView for this
+                    // artwork. Added as part of the inspo-board feature branch.
+                    inspoBoardButton
+
                     Divider()
 
                     // Detailed metadata rows
@@ -139,6 +143,45 @@ struct ArtworkDetailView: View {
                     .foregroundStyle(.tertiary)
             }
         }
+    }
+
+    // MARK: - Inspo Board Button
+
+    /// Two action buttons: single-source Inspo Board + new Combined VisionBoard.
+    private var inspoBoardButton: some View {
+        VStack(spacing: 10) {
+            NavigationLink {
+                PaletteBoardView(artwork: artwork)
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "sparkles")
+                    Text("Create Inspo Board")
+                        .font(.subheadline.weight(.semibold))
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Color.terracotta, in: Capsule())
+            }
+
+            NavigationLink {
+                CombinePickerView(preselectedArtwork: artwork)
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "circle.grid.2x2")
+                    Text("Combine with My Photo")
+                        .font(.subheadline.weight(.semibold))
+                }
+                .foregroundStyle(Color.terracotta)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Color.creamDark, in: Capsule())
+                .overlay(
+                    Capsule().stroke(Color.terracotta.opacity(0.3), lineWidth: 1)
+                )
+            }
+        }
+        .padding(.top, 4)
     }
 
     // MARK: - Badges Row

@@ -3,6 +3,8 @@ The initial prompt that I made using claude:
 
 ## App: MET Inspo — Art Inspiration Board
 
+###Final project edits at the bottom
+
 ---
 
 Build a SwiftUI iOS app called **MET Inspo** that fetches artwork data from the Metropolitan Museum of Art's public API (no key required) and displays it as a scrollable visual inspiration board, similar to Pinterest. The app should feel like an editorial art gallery — clean, sophisticated, and image-forward.
@@ -259,3 +261,21 @@ Create these files:
 As I ran into errors, I went to the errors and "Generated" fixes for the little things that popped up. 
 
 
+## FINAL - Claude Code edits
+
+1. Deleted duplicate and conflicting Swift files that were causing the project to not compile
+2. Rewrote ContentView.swift to remove everything that didn't belong there and kept only the tab bar
+3. Added a .combined source type to SavedBoard so the app can save boards made from two sources
+4. Added extra fields to SavedBoard to store the personal photo, and remember how many colors came from each source
+5. Added a new method to PaletteExtractor that pulls colors from two images at the same time instead of one at a time
+6. Added a new method to PaletteNamer that prompts the AI with both color sources and asks it to name the palette like a UX design direction
+7. Built CombinePickerView — a two step screen where you pick a Met artwork first then a photo from your camera roll
+8. Built CombinedBoardView — the screen that shows both images stacked on top of each other with the merged color palette and all the board info below it
+9. Added a "Combine with My Photo" button to the artwork detail page
+10. Added a "New Combined VisionBoard" button to the profile page
+11. Made the search bar in the Explore tab actually work and pull results from the Met API
+12. Made every color swatch tappable so it copies the hex code to your clipboard
+13. Updated the save sheet and saved board detail screen to handle the new combined board type
+14. Added a fourth Combine tab to the bottom navigation
+15, Changed the tab bar to show icons only with no text
+16. Redesigned the home page as a scrapbook polaroid collage with staggered cards, slight rotations, color dots, and a digital camera timestamp on each photo

@@ -2,23 +2,9 @@
 //  ArtworkListView.swift — contains HomeView
 //  MetDigitalGallery
 //
-//  Created by Allison Ramirez on 4/1/26.
-//
-//  PROJECT 2 — Home Feed (matches Figma "Home Feed" screen)
-//
-//  Layout:
-//    • Custom nav header: ☰  MET Inspo  🔍
-//    • "Curated Visions" large serif headline in terracotta
-//    • Tagline subtitle in gray
-//    • Vertical scroll of artwork cards:
-//        [Full-width image]
-//        DEPARTMENT LABEL  ← small caps, terracotta, tracked (galleryLabelStyle)
-//        Artwork Title     ← large serif bold (galleryDisplay)
-//        Artist, Year      ← small gray
-//        ─────────────── ← thin divider
-//
-//  Data: ArtworkViewModel fetches live data from the Met Museum API via URLSession.
-//  Each card is a NavigationLink → ArtworkDetailView.
+//  HOME tab — Scrapbook / Digital Camera Collage
+//  Polaroid-style cards, slightly rotated, staggered 2-column layout.
+//  Each card shows the artwork photo + extracted color dots beneath it.
 //
 
 import SwiftUI
@@ -27,231 +13,185 @@ import SwiftUI
 
 struct HomeView: View {
 
-    // @StateObject keeps the ViewModel alive for this view's full lifetime.
-    // Using @ObservedObject instead would risk the ViewModel being destroyed
-    // when the parent re-renders.
     @StateObject private var viewModel = ArtworkViewModel()
+
+    // Two independently-offset columns for a staggered collage feel
+    private var leftArtworks:  [ArtObject] { stride(from: 0, to: viewModel.artworks.count, by: 2).map { viewModel.artworks[$0] } }
+    private var rightArtworks: [ArtObject] { stride(from: 1, to: viewModel.artworks.count, by: 2).map { viewModel.artworks[$0] } }
 
     var body: some View {
         VStack(spacing: 0) {
+            header
+            Rectangle().fill(Color.terracotta.opacity(0.1)).frame(height: 0.5)
 
-            // Custom top bar — replaces the default SwiftUI NavigationStack bar
-            HomeNavBar()
-            Divider().opacity(0.3)
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-
-                    // "Curated Visions" hero text block
-                    heroBanner
-
-                    // Switch on ViewModel state to show the right UI
-                    if viewModel.isLoading {
-                        loadingBlock
-                    } else if let error = viewModel.errorMessage {
-                        errorBlock(message: error)
-                    } else if viewModel.artworks.isEmpty {
-                        emptyBlock
-                    } else {
-                        artworkCards
-                    }
-                }
-            }
-        }
-        .background(Color.cream)
-        // We use HomeNavBar, so hide SwiftUI's default navigation chrome
-        .navigationBarHidden(true)
-        .onAppear {
-            // Only fetch on first appearance; preserve data when navigating back
-            if viewModel.artworks.isEmpty {
-                viewModel.loadArtworks()
-            }
-        }
-    }
-
-    // MARK: - Hero Banner
-
-    // "Curated Visions" + tagline — always visible above the card list.
-    private var heroBanner: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Curated Visions")
-                .font(.galleryDisplay(42))
-                .foregroundStyle(Color.terracotta)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 24)
-    }
-
-    // MARK: - Artwork Cards
-
-    // LazyVStack renders each row on demand as the user scrolls — efficient for long lists.
-    // Each row is a NavigationLink so tapping pushes ArtworkDetailView onto the stack.
-    private var artworkCards: some View {
-        LazyVStack(spacing: 0) {
-            ForEach(viewModel.artworks) { artwork in
-                NavigationLink(destination: ArtworkDetailView(artwork: artwork)) {
-                    ArtworkCardView(artwork: artwork)
-                }
-                // .plain prevents NavigationLink from applying its default blue tint
-                .buttonStyle(.plain)
-            }
-        }
-    }
-
-    // MARK: - State Blocks
-
-    // Loading spinner shown while URLSession requests are in flight
-    private var loadingBlock: some View {
-        VStack(spacing: 16) {
-            ProgressView().scaleEffect(1.3)
-            Text("Loading collection…")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 80)
-    }
-
-    // Empty state before the first load completes
-    private var emptyBlock: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "building.columns")
-                .font(.system(size: 48))
-                .foregroundStyle(Color.terracotta.opacity(0.4))
-            Text("No artworks yet")
-                .font(.galleryHeadline(18))
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 80)
-    }
-
-    // Error state with retry button
-    private func errorBlock(message: String) -> some View {
-        VStack(spacing: 20) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.largeTitle)
-                .foregroundStyle(Color.terracotta)
-            Text(message)
-                .font(.subheadline)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 40)
-            Button("Try Again") { viewModel.loadArtworks() }
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(Color.terracotta)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 80)
-    }
-}
-
-// MARK: - HomeNavBar
-
-// Custom top bar matching the Figma header exactly:
-//   ☰   MET Inspo   🔍
-private struct HomeNavBar: View {
-    var body: some View {
-        HStack {
-            // Hamburger / menu icon
-            Image(systemName: "line.3.horizontal")
-                .font(.system(size: 18, weight: .medium))
-            Spacer()
-            // App name centered in serif
-            Text("MET Inspo")
-                .font(.system(size: 17, weight: .semibold, design: .serif))
-            Spacer()
-            // Search icon
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 18, weight: .medium))
-        }
-        .foregroundStyle(.primary)
-        .padding(.horizontal, 20)
-        .padding(.vertical, 14)
-        .background(Color.cream)
-    }
-}
-
-// MARK: - ArtworkCardView
-
-// One card in the home feed — matches the Figma card layout:
-//
-//   ┌─────────────────────────────┐
-//   │      [Full-width image]     │  height: 260
-//   ├─────────────────────────────┤
-//   │  EUROPEAN PAINTINGS         │  ← galleryLabelStyle (terracotta, tracked)
-//   │  The Harvesters             │  ← galleryDisplay (serif bold)
-//   │  Pieter Bruegel, 1565       │  ← subheadline gray
-//   └─────────────────────────────┘
-//   ─────────────────────────────── ← thin divider
-//
-private struct ArtworkCardView: View {
-    let artwork: ArtObject
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-
-            // Full-width artwork image.
-            AsyncImage(url: URL(string: artwork.primaryImageSmall)) { phase in
-                switch phase {
-                case .empty:
-                    Color.creamDark
-                        .overlay(ProgressView())
-
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-
-                case .failure:
-                    Color.creamDark
-                        .overlay(
-                            Image(systemName: "photo.slash")
-                                .foregroundStyle(.tertiary)
-                        )
-
-                @unknown default:
-                    EmptyView()
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 260)
-            .clipped()
-
-            // Text block below the image
-            VStack(alignment: .leading, spacing: 6) {
-
-                // Department label — small caps terracotta
-                if !artwork.department.isEmpty {
-                    Text(artwork.department)
-                        .galleryLabelStyle()
-                }
-
-                // Artwork title — large serif bold (~26pt)
-                Text(artwork.displayTitle)
-                    .font(.galleryDisplay(26))
-                    .foregroundStyle(.primary)
-                    .lineLimit(3)
-
-                // "Artist Name, Year" — small gray text
-                let artistParts = [artwork.displayArtist, artwork.objectDate]
-                    .filter { !$0.isEmpty && $0 != "Unknown Artist" }
-                if !artistParts.isEmpty {
-                    Text(artistParts.joined(separator: ", "))
-                        .font(.subheadline)
+            if viewModel.isLoading {
+                Spacer()
+                VStack(spacing: 10) {
+                    ProgressView().scaleEffect(1.2)
+                    Text("Developing…")
+                        .font(.system(size: 12, design: .monospaced))
                         .foregroundStyle(.secondary)
                 }
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 14)
-            .padding(.bottom, 18)
-            .frame(maxWidth: .infinity, alignment: .leading)
+                Spacer()
+            } else {
+                ScrollView {
+                    HStack(alignment: .top, spacing: 12) {
+                        // Left column — offset slightly down for stagger
+                        VStack(spacing: 16) {
+                            ForEach(leftArtworks)  { art in PolaroidCard(artwork: art) }
+                        }
+                        .padding(.top, 28)
 
-            // Thin separator between cards
-            Divider().opacity(0.35)
+                        // Right column — starts higher
+                        VStack(spacing: 16) {
+                            ForEach(rightArtworks) { art in PolaroidCard(artwork: art) }
+                        }
+                        .padding(.top, 6)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 16)
+                    .padding(.bottom, 40)
+                }
+            }
         }
         .background(Color.cream)
+        .navigationBarHidden(true)
+        .onAppear {
+            if viewModel.artworks.isEmpty { viewModel.loadArtworks() }
+        }
+    }
+
+    // MARK: - Header
+
+    private var header: some View {
+        HStack(alignment: .center) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text("VisionBoard")
+                    .font(.system(size: 18, weight: .semibold, design: .serif))
+                Text("color inspiration")
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(Color.terracotta.opacity(0.7))
+            }
+            Spacer()
+            // Film counter — digital camera aesthetic
+            Text("⬤ REC")
+                .font(.system(size: 9, weight: .bold, design: .monospaced))
+                .foregroundStyle(Color.terracotta)
+                .padding(.horizontal, 7)
+                .padding(.vertical, 3)
+                .background(Color.terracotta.opacity(0.1), in: RoundedRectangle(cornerRadius: 4))
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color.cream)
+    }
+}
+
+// MARK: - PolaroidCard
+
+private struct PolaroidCard: View {
+
+    let artwork: ArtObject
+    @State private var colors: [DominantColor] = []
+
+    // Deterministic tilt seeded from objectID — never re-randomizes
+    private var tilt: Double {
+        let seed = artwork.objectID % 9
+        return Double(seed - 4) * 0.6   // range: -2.4° to +2.4°
+    }
+
+    var body: some View {
+        NavigationLink(destination: ArtworkDetailView(artwork: artwork)) {
+            cardBody
+        }
+        .buttonStyle(.plain)
+        .rotationEffect(.degrees(tilt))
+        .task { await extractColors() }
+    }
+
+    private var cardBody: some View {
+        VStack(alignment: .leading, spacing: 0) {
+
+            // ── Photo area ─────────────────────────────────────────────
+            ZStack(alignment: .bottomTrailing) {
+                AsyncImage(url: URL(string: artwork.primaryImageSmall)) { phase in
+                    switch phase {
+                    case .success(let img):
+                        img.resizable().scaledToFit()
+                    case .empty:
+                        Color.creamDark.overlay(
+                            Image(systemName: "camera")
+                                .font(.system(size: 20))
+                                .foregroundStyle(.tertiary)
+                        )
+                    default:
+                        Color.creamDark
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .background(Color.black.opacity(0.04))
+
+                // Date stamp — digital camera watermark feel
+                if !artwork.objectDate.isEmpty {
+                    Text(artwork.objectDate)
+                        .font(.system(size: 8, weight: .medium, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 3)
+                        .background(Color.black.opacity(0.35))
+                        .padding(6)
+                }
+            }
+
+            // ── White polaroid bottom ──────────────────────────────────
+            VStack(alignment: .leading, spacing: 8) {
+
+                // Color dot strip
+                HStack(spacing: 5) {
+                    if colors.isEmpty {
+                        ForEach(0..<5, id: \.self) { _ in
+                            Circle().fill(Color.creamDark).frame(width: 14, height: 14)
+                        }
+                    } else {
+                        ForEach(colors) { c in
+                            Circle()
+                                .fill(c.color)
+                                .frame(width: 14, height: 14)
+                                .shadow(color: c.color.opacity(0.4), radius: 2)
+                        }
+                    }
+                    Spacer()
+                }
+
+                // Title — small, handwritten feel
+                Text(artwork.displayTitle)
+                    .font(.system(size: 11, weight: .regular, design: .serif))
+                    .foregroundStyle(.primary.opacity(0.75))
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if !artwork.displayArtist.isEmpty {
+                    Text(artwork.displayArtist)
+                        .font(.system(size: 9, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            .padding(.horizontal, 10)
+            .padding(.top, 10)
+            .padding(.bottom, 12)
+            .background(Color.white)
+        }
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+        .shadow(color: .black.opacity(0.13), radius: 8, x: 0, y: 4)
+        .shadow(color: .black.opacity(0.06), radius: 2, x: 0, y: 1)
+    }
+
+    private func extractColors() async {
+        guard colors.isEmpty else { return }
+        guard let img = await ImageLoader.shared.load(from: artwork.primaryImageSmall) else { return }
+        colors = await PaletteExtractor.shared.extract(from: img, count: 5)
     }
 }
 
@@ -260,4 +200,3 @@ private struct ArtworkCardView: View {
 #Preview {
     NavigationStack { HomeView() }
 }
-
