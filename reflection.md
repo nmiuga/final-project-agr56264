@@ -22,4 +22,4 @@ I used AI throughout this project not just to write code but to explain *why* th
 
 ## If I Had More Time
 
-I'd want to explore more of what makes native apps feel *native* — things like haptic feedback patterns, shared element transitions between screens, and offline caching so the app works without a connection. I'd also want to try building the color extraction with k-means clustering instead of the bucket approach, which would give more perceptually accurate results. But for a first iOS project, I'm genuinely happy with how it came together.
+I'd love to add a community layer where users can share their saved palettes and show how those colors actually show up in real projects like seeing the palette in context, not just as swatches. I also want to take it in a more personal direction, kind of like VSCO but for color — somewhere you can document and journal the colors you're drawn to in your everyday life, not just from art.
