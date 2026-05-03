@@ -1,57 +1,33 @@
-# MetDigitalGallery — Project Reflection
+# VisionBoard for Color — Project Reflection
 
-## Overview
-
-MetDigitalGallery is an iOS app built with SwiftUI that connects to the Metropolitan Museum of Art's free public Collection API. Users can browse curated artwork, explore the full collection in a grid view, and tap into a detail screen for metadata on any piece. The app was designed to match a provided Figma mockup, using a warm terracotta and cream color palette and custom serif typography.
+Coming into this class, my background is mostly web — HTML, CSS, JavaScript, some React. I know how to build things for a browser but I'd never touched Swift or Xcode before this semester. So this project was genuinely me learning a new platform from scratch, and I leaned on AI a lot to bridge that gap.
 
 ---
 
-## What I Built
+## What Was Actually New for Me
 
-The app has three tabs, each representing a distinct part of the experience:
+The biggest mental shift was understanding that SwiftUI is not like building a webpage. In web development, you have the DOM, you reach in and change things, and the page updates. In SwiftUI everything is declarative and state-driven — you describe what the UI *should look like* given the current data, and the framework handles re-rendering. That clicked for me once I saw `@State` and `@Query` in action. It's actually closer to React than I expected, but the syntax and the tooling felt completely foreign at first.
 
-- **Home** — A vertically scrolling feed of artwork cards pulled live from the Met API. Each card shows the full-width image, department label, title, and artist/date. Tapping a card pushes a detail view.
-- **Explore** — A two-column image grid for browsing the collection visually. Each thumbnail navigates to the same detail screen.
-- **Profile** — A placeholder profile screen styled to match the app's design system, with a mock user and settings rows.
+Consuming the Met Museum API was familiar territory — it's just a REST API returning JSON, same as I'd use `fetch()` for in JavaScript. What was different was doing it in Swift with `async/await` and `Codable`. Instead of manually parsing a JSON response, you define a struct that matches the shape of the data and Swift decodes it automatically. That felt almost magical the first time it worked.
 
----
-
-## Technical Decisions
-
-**MVVM Architecture**
-I used the Model–View–ViewModel pattern throughout. `ArtObject.swift` holds the data models that map directly to the Met API's JSON shape using `Codable`. `ArtworkViewModel` handles all network logic using `async/await` and `URLSession`, keeping views clean and focused on layout.
-
-**Met Museum API**
-The app performs a two-step fetch: first calling the `/search` endpoint to get matching object IDs, then fetching full metadata from `/objects/{id}` for each result. I capped results at 15 items per search to keep load times reasonable.
-
-**Design Tokens**
-Rather than scattering raw hex strings everywhere, I centralized the color palette and typography into `GalleryTheme.swift`. This made it easy to stay consistent with the Figma design and change values in one place.
-
-**Custom Tab Bar**
-SwiftUI's built-in `TabView` didn't match the Figma design, so I built a custom bottom navigation bar with a capsule-shaped active-state highlight in terracotta. The active tab shows white text on a terracotta pill; inactive tabs use a muted gray.
+The part I was most curious about was Apple's on-device AI (`@Generable` and Foundation Models). I'd worked with APIs like OpenAI before, but this runs entirely on the device — no network call, no API key, and the output comes back as a typed Swift struct rather than a raw string you have to parse. The `@Generable` macro basically tells the compiler "this struct is something the LLM can fill in," which is a really different mental model than anything I'd seen in web development.
 
 ---
 
-## Challenges
+## What Was Hard
 
-The biggest challenge was managing the project file structure. Over multiple iterations, files accumulated duplicate definitions — two entry points, two model types, and the same views defined both inline in `ContentView.swift` and in their own files. This caused a cascade of "invalid redeclaration" compile errors that had to be untangled carefully by identifying the authoritative version of each type and deleting the rest.
+The hardest part honestly wasn't the Swift itself — it was Xcode. Coming from VS Code, the Xcode environment is a lot to take in. Build errors show up in weird places, the simulator has its own quirks, and when something goes wrong it's not always obvious whether the problem is your code, the build cache, or the IDE itself. I cleared DerivedData more than once just to get a clean build.
 
-Another challenge was handling the Met API's inconsistent data — many fields like `artistDisplayName`, `culture`, and `period` are empty strings rather than `null` for a large portion of objects. The app handles this gracefully by checking for empty strings and falling back to safe display values like "Unknown Artist."
+I also ran into a situation where duplicate files caused a cascade of "invalid redeclaration" compile errors — basically two versions of the same view or model existing at once. In a web project you'd just delete a file and move on, but in Xcode the project file tracks everything, so it took some careful cleanup to sort out which version of each file was the right one.
 
 ---
 
-## What I Learned
+## How AI Helped Me Learn
 
-- How to consume a real public REST API in Swift using `async/await` and `Codable`
-- How to structure an iOS app with MVVM so that network logic stays out of views
-- How to implement a custom navigation bar and tab bar in SwiftUI to match a Figma design exactly
-- The importance of keeping one authoritative definition per type — duplicate files are a quick path to compile errors that are painful to debug
+I used AI throughout this project not just to write code but to explain *why* things work the way they do. When I didn't understand why `async let` was faster than two sequential `await` calls, I asked. When I couldn't figure out why my cards were zoomed in and cropping, I described what I was seeing and learned the difference between `scaledToFit` and `scaledToFill`. That back-and-forth — seeing the code, running it, noticing something was off, and then actually understanding the fix — is what made this feel like learning rather than just copying.
 
 ---
 
 ## If I Had More Time
 
-- Add a search bar on the Explore tab so users can search by keyword, artist, or department
-- Persist favorited artworks with SwiftData so the Profile tab shows a real saved collection
-- Add a department filter to the Home feed
-- Improve the Explore grid with artwork titles overlaid on the thumbnails
+I'd want to explore more of what makes native apps feel *native* — things like haptic feedback patterns, shared element transitions between screens, and offline caching so the app works without a connection. I'd also want to try building the color extraction with k-means clustering instead of the bucket approach, which would give more perceptually accurate results. But for a first iOS project, I'm genuinely happy with how it came together.
