@@ -10,8 +10,8 @@
 //  launch; it can't see pixels. Pixel work happens here, then hex codes
 //  are handed to PaletteNamer.
 //
-//  TODO: upgrade to true k-means for better perceptual accuracy — current
-//        bucket-count approach over-rewards large flat backgrounds.
+//  Known limitation: bucket-count approach can over-reward large flat
+//  backgrounds; a future version could use k-means for better perceptual accuracy.
 //
 
 import UIKit

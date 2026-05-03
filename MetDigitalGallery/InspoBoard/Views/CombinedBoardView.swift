@@ -294,22 +294,26 @@ struct CombinedBoardView: View {
     // MARK: - Save Sheet
 
     private var saveSheet: some View {
-        SaveBoardSheet(
-            source: .combined,
-            metArtworkID: artwork.objectID,
-            imageURL: artwork.primaryImageSmall.isEmpty ? nil : artwork.primaryImageSmall,
-            imageData: nil,
-            photoImageData: photo.jpegData(compressionQuality: 0.85),
-            artworkColorCount: artworkColorCount,
-            photoColorCount: photoColorCount,
-            artworkTitle: artwork.displayTitle,
-            artworkArtist: artwork.displayArtist.isEmpty ? nil : artwork.displayArtist,
-            palette: board!,
-            colorHexes: allColors.map(\.hex)
-        ) {
-            didSave = true
-            isSaveSheetPresented = false
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        Group {
+            if let board {
+                SaveBoardSheet(
+                    source: .combined,
+                    metArtworkID: artwork.objectID,
+                    imageURL: artwork.primaryImageSmall.isEmpty ? nil : artwork.primaryImageSmall,
+                    imageData: nil,
+                    photoImageData: photo.jpegData(compressionQuality: 0.85),
+                    artworkColorCount: artworkColorCount,
+                    photoColorCount: photoColorCount,
+                    artworkTitle: artwork.displayTitle,
+                    artworkArtist: artwork.displayArtist.isEmpty ? nil : artwork.displayArtist,
+                    palette: board,
+                    colorHexes: allColors.map(\.hex)
+                ) {
+                    didSave = true
+                    isSaveSheetPresented = false
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                }
+            }
         }
     }
 

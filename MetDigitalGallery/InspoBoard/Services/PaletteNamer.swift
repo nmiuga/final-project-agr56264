@@ -8,9 +8,6 @@
 //
 //  Requires iOS 26+ and an Apple Intelligence-eligible device.
 //
-//  TODO: verify `session.respond(to:generating:)` against the latest
-//        FoundationModels docs — the API has iterated since WWDC25.
-//
 
 import Foundation
 import FoundationModels

@@ -7,8 +7,8 @@
 //  hand back a UIImage we can feed into PaletteExtractor — so we do a
 //  separate URLSession fetch here.
 //
-//  No caching for now. TODO: hook up URLCache or NSCache if repeated
-//  generations on the same artwork become common.
+//  No caching — each load is a fresh URLSession fetch. A future improvement
+//  would add NSCache to avoid re-downloading the same artwork image.
 //
 
 import UIKit

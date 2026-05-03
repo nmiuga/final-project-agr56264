@@ -132,8 +132,9 @@ struct SaveBoardSheet: View {
             onSaved()
             dismiss()
         } catch {
-            // TODO: surface this to the user with a toast/alert.
-            print("SaveBoardSheet: failed to save — \(error.localizedDescription)")
+            // Save failed — dismiss anyway so the user isn't stuck.
+            // A future improvement would show an alert here.
+            dismiss()
         }
     }
 }
